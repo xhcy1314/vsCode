@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+var vscode_languageserver_1 = require("vscode-languageserver");
+function formatError(message, err) {
+    if (err instanceof Error) {
+        var error = err;
+        return message + ": " + error.message + "\n" + error.stack;
+    }
+    else if (typeof err === 'string') {
+        return message + ": " + err;
+    }
+    else if (err) {
+        return message + ": " + err.toString();
+    }
+    return message;
+}
+exports.formatError = formatError;
+function runSafe(func, errorVal, errorMessage, token) {
+    return new Promise(function (resolve, reject) {
+        setImmediate(function () {
+            if (token.isCancellationRequested) {
+                resolve(cancelValue());
+            }
+            else {
+                try {
+                    var result = func();
+                    if (token.isCancellationRequested) {
+                        resolve(cancelValue());
+                        return;
+                    }
+                    else {
+                        resolve(result);
+                    }
+                }
+                catch (e) {
+                    console.error(formatError(errorMessage, e));
+                    resolve(errorVal);
+                }
+            }
+        });
+    });
+}
+exports.runSafe = runSafe;
+function cancelValue() {
+    return new vscode_languageserver_1.ResponseError(vscode_languageserver_1.ErrorCodes.RequestCancelled, 'Request cancelled');
+}
+//# sourceMappingURL=https://ticino.blob.core.windows.net/sourcemaps/1dfc5e557209371715f655691b1235b6b26a06be/extensions\css-language-features\server\out/utils\runner.js.map

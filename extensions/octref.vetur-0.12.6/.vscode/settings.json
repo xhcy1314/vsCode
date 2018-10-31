@@ -1,0 +1,8 @@
+{
+  "tslint.enable": true,
+  "files.exclude": {
+    "server/dist": true,
+    "docs/_book": true,
+    "client/out": true
+  }
+}
